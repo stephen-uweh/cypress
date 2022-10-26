@@ -144,10 +144,10 @@ class ActivityController extends Controller
 
 
 
-    // User Activities
+    // User Activities For Admin
 
-    public function allUserActivities(){
-        $userId = auth()->user()->id;
+    public function allUserActivities($userId){
+       
         $userActivities = UserActivity::where('userId', $userId)->orderBy('date', 'asc')->get();
 
         return response()->json([
@@ -168,7 +168,6 @@ class ActivityController extends Controller
 
 
     public function addActivityForUser(Request $request){
-        $userId = auth()->user()->id;
 
         $validation = Validator::make($request->all(), [
             'title' => 'required',
@@ -188,7 +187,7 @@ class ActivityController extends Controller
         }
 
         $userActivity = UserActivity::create([
-            'userId' => $userId,
+            'userId' => $request->userId,
             'title' => $request->title,
             'description' => $request->description,
             'image' => $filePath,
@@ -200,4 +199,38 @@ class ActivityController extends Controller
             'data' => $userActivity
         ]);
     }
+
+    public function editActivityForUser(Request $request, $id){
+        $activity = UserActivity::findOrFail($id);
+
+        if ($request->file('image')){
+            
+            $filePath = Cloudinary::uploadFile($request->file('image')->getRealPath())->getSecurePath();
+        }
+
+        $request->image = $filePath;
+
+        // Update Activity
+        $activity->update($request->all());
+
+        return response()->json([
+            'status' => 201,
+            'message' => 'Activity updated',
+            'data' => $activity
+        ]);
+    }
+
+    public function deleteActivityForUser($id){
+        $activity = UserActivity::findOrFail($id);
+
+        $activity->delete();
+
+        return response()->json([
+            'status' => 201,
+            'message' => "Activity Deleted"
+        ]);
+
+    }
+
+    
 }
