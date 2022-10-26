@@ -20,13 +20,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => '/global/activities'], function(){
+    Route::get('/all', [ActivityController::class, 'index']);
 
-Route::get('/all', [ActivityController::class, 'index']);
+    Route::get('/{id}', [ActivityController::class, 'show']);
 
-Route::get('/activities/{id}', [ActivityController::class, 'show']);
+    Route::post('/add', [ActivityController::class, 'addGlobal']);
 
-Route::post('/activities/add', [ActivityController::class, 'add']);
+    Route::patch('/{id}/edit', [ActivityController::class, 'editGlobal']);
 
-Route::patch('activities/{id}/edit', [ActivityController::class, 'edit']);
+    Route::delete('/{id}/delete', [ActivityController::class, 'deleteGlobal']);
+});
 
-Route::get('/test/{date}', [ActivityController::class, 'test']);

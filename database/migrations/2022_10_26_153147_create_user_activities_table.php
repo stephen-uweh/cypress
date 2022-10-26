@@ -16,9 +16,10 @@ class CreateUserActivitiesTable extends Migration
         Schema::create('user_activities', function (Blueprint $table) {
             $table->id();
             $table->string('userId');
+            $table->string('activityId')->nullable();
             $table->string('title');
             $table->text('description');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->date('date');
             $table->timestamps();
         });
