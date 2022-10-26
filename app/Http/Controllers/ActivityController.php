@@ -15,9 +15,7 @@ class ActivityController extends Controller
     //Global Activities
 
     public function index(Request $request){
-        // $startDate = Carbon::parse($request->startDate)->format('Y-m-d');
-        // $endDate = Carbon::parse($request->endDate)->format('Y-m-d');
-        // $activities = Activity::whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get();
+        
         $activities = Activity::orderBy('created_at', 'asc')->get();
         return response()->json([
             'status' => 200,
@@ -232,5 +230,33 @@ class ActivityController extends Controller
 
     }
 
+
+
+    // Activities on User Panel
+
+    public function userIndex(){
+        $userId = auth()->user()->id;
+
+        $activities = UserActivity::where('userId', $userId)->orderBy('date', 'asc')->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $activities
+        ]);
+    }
+
+    
+
+    public function getUserActivitiesByRange(Request $request){
+        $startDate = Carbon::parse($request->startDate)->format('Y-m-d');
+        $endDate = Carbon::parse($request->endDate)->format('Y-m-d');
+        $userId = auth()->user()->id;
+        $activities = UserActivity::whereBetween('date', [$startDate, $endDate])->where('userId', $userId)->orderBy('date', 'asc')->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $activities
+        ]);
+    }
     
 }

@@ -32,3 +32,20 @@ Route::group(['prefix' => '/global/activities'], function(){
     Route::delete('/{id}/delete', [ActivityController::class, 'deleteGlobal']);
 });
 
+
+Route::group(['/prefix' => 'users/activities'], function(){
+    Route::get('/all', [ActivityController::class, 'allUserActivities']);
+
+    Route::get('/{id}', [ActivityController::class, 'showUserActivity']);
+
+    Route::post('/add', [ActivityController::class, 'addActivityForUser']);
+
+    Route::patch('/{id}/edit', [ActivityController::class, 'editActivityForUser']);
+
+    Route::delete('/{id}/delete', [ActivityController::class, 'deleteActivityForUser']);
+});
+
+
+Route::get('/my/activities', [ActivityController::class, 'userIndex']);
+
+Route::get('/activities/range', [ActivityController::class, 'getUserActivitiesByRange']);
