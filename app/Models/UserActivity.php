@@ -18,7 +18,7 @@ class UserActivity extends Model
     ];
 
     protected $casts = [
-        'date' => 'd-m-Y'
+        'date' => 'datetime:d-m-Y'
     ];
 
 }

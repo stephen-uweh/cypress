@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
         $user = User::create($data);
 
         return response()->json([
-            'success' => true,
+            'status' => 200,
             'message' => "Admin added",
             'data' => $user
         ], 201);
@@ -47,6 +47,10 @@ class AuthenticationController extends Controller
         }
         $user = User::where('id', auth()->user()->id)->firstOrFail();
         $user->access_token = $token;
-        return $user;
+        return response()->json([
+            'status' => 200,
+            'message' => "Login successful",
+            'data' => $user
+        ], 201);
     }
 }
