@@ -103,13 +103,14 @@ class ActivityController extends Controller
         if ($request->file('image')){
             
             $filePath = Cloudinary::uploadFile($request->file('image')->getRealPath())->getSecurePath();
+            $request->image = $filePath;
         }
-        $request->image = $filePath;
+        
 
         // Update Activity
         $activity->update($request->all());
 
-        $userActivities = UserActivity::findOrFail($id);
+        $userActivities = UserActivity::where('activityId', $id)->get();
 
         foreach($userActivities as $userActivity){
             $userActivity->update($request->all());
@@ -128,7 +129,7 @@ class ActivityController extends Controller
 
         $activity->delete();
 
-        $userActivities = UserActivity::findOrFail($id);
+        $userActivities = UserActivity::where("activityId", $id)->get();
 
         foreach($userActivities as $userActivity){
             $userActivity->delete();
@@ -144,9 +145,8 @@ class ActivityController extends Controller
 
     // User Activities For Admin
 
-    public function allUserActivities($userId){
-       
-        $userActivities = UserActivity::where('userId', $userId)->orderBy('date', 'asc')->get();
+    public function allUserActivities($user){
+        $userActivities = UserActivity::where('userId', $user)->orderBy('date', 'asc')->get();
 
         return response()->json([
             'status' => 200,
@@ -155,7 +155,8 @@ class ActivityController extends Controller
     }
 
 
-    public function showUserActivity($id){
+    public function showUserActivity($user, $id){
+        
         $userActivity = UserActivity::findOrFail($id);
 
         return response()->json([
@@ -178,7 +179,7 @@ class ActivityController extends Controller
                 'message' => $validation->errors()
             ]);
         }
-
+        $filePath = "";
         if ($request->file('image')){
             
             $filePath = Cloudinary::uploadFile($request->file('image')->getRealPath())->getSecurePath();
@@ -204,9 +205,10 @@ class ActivityController extends Controller
         if ($request->file('image')){
             
             $filePath = Cloudinary::uploadFile($request->file('image')->getRealPath())->getSecurePath();
+            $request->image = $filePath;
         }
 
-        $request->image = $filePath;
+        
 
         // Update Activity
         $activity->update($request->all());
@@ -245,9 +247,19 @@ class ActivityController extends Controller
         ]);
     }
 
+
+    public function singleActivity($id){
+        $activity = UserActivity::findOrFail($id);
+
+        return response()->json([
+            'status' => 200,
+            'data' => $activity
+        ]);
+    }
     
 
     public function getUserActivitiesByRange(Request $request){
+        
         $startDate = Carbon::parse($request->startDate)->format('Y-m-d');
         $endDate = Carbon::parse($request->endDate)->format('Y-m-d');
         $userId = auth()->user()->id;

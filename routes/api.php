@@ -25,32 +25,38 @@ Route::post('/register', [AuthenticationController::class, 'register']);
 
 Route::post('/login', [AuthenticationController::class, 'login']);
 
-Route::group(['prefix' => '/global/activities'], function(){
+
+Route::group(['prefix' => '/global/activities'], function () {
     Route::get('/all', [ActivityController::class, 'index']);
 
     Route::get('/{id}', [ActivityController::class, 'show']);
 
-    Route::post('/add', [ActivityController::class, 'addGlobal']);
+    Route::post('/add', [ActivityController::class, 'addGlobal'])->middleware('can:admin');
 
-    Route::patch('/{id}/edit', [ActivityController::class, 'editGlobal']);
+    Route::patch('/{id}/edit', [ActivityController::class, 'editGlobal'])->middleware('can:admin');
 
-    Route::delete('/{id}/delete', [ActivityController::class, 'deleteGlobal']);
+    Route::delete('/{id}/delete', [ActivityController::class, 'deleteGlobal'])->middleware('can:admin');
 });
 
 
-Route::group(['/prefix' => 'users/activities'], function(){
-    Route::get('/all', [ActivityController::class, 'allUserActivities']);
+Route::group(['prefix' => '/users/{user}'], function () {
+    
+    Route::get('/', [ActivityController::class, 'allUserActivities'])->middleware('can:admin');
 
-    Route::get('/{id}', [ActivityController::class, 'showUserActivity']);
+    Route::get('/show/{id}', [ActivityController::class, 'showUserActivity'])->middleware('can:admin');
 
-    Route::post('/add', [ActivityController::class, 'addActivityForUser']);
+    Route::post('/add', [ActivityController::class, 'addActivityForUser'])->middleware('can:admin');
 
-    Route::patch('/{id}/edit', [ActivityController::class, 'editActivityForUser']);
+    Route::patch('/edit/{id}', [ActivityController::class, 'editActivityForUser'])->middleware('can:admin');
 
-    Route::delete('/{id}/delete', [ActivityController::class, 'deleteActivityForUser']);
+    Route::delete('/delete/{id}', [ActivityController::class, 'deleteActivityForUser'])->middleware('can:admin');
 });
 
 
-Route::get('/my/activities', [ActivityController::class, 'userIndex']);
+Route::get('/my/activities', [ActivityController::class, 'userIndex'])->middleware('auth');
 
-Route::get('/activities/range', [ActivityController::class, 'getUserActivitiesByRange']);
+Route::get('/my/activities/{id}', [ActivityController::class, 'singleActivity'])->middleware('auth');
+
+Route::get('/activities/range', [ActivityController::class, 'getUserActivitiesByRange'])->middleware('auth');
+
+

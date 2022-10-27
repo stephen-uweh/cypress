@@ -29,6 +29,9 @@ class AuthenticationController extends Controller
         $data = $request->all();
         $password = $data['password'];
         $data['password'] = Hash::make($password);
+        if($request->isAdmin){
+            $data['isAdmin'] = 1;
+        }
         $user = User::create($data);
 
         return response()->json([
